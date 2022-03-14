@@ -1,0 +1,110 @@
+@import '~@angular/material/theming';
+// @import "~bootstrap/scss/bootstrap";
+
+// @import './styles.scss';
+@include mat-core();
+
+
+
+
+$mat-csc-blue: (
+  100: #003B5C,
+  A100: #003B5C,
+  A200: #3b6589,
+  A400: #001532,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+$mat-csc-green: (
+  100: #00B2A9,
+  A100: #5be5da,
+  A200: #00B2A9,
+  A400: #00827a,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+$mat-csc-red: (
+  100: #E03E52,
+  A100: #ff737e,
+  A200: #E03E52,
+  A400: #a8002a,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+$mat-csc-grey: (
+  100: #97999B,
+  A100: #D1D3D4,
+  A200: #97999B,
+  A400: #54585A,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+
+$csc-theme-primary: mat-palette($mat-csc-blue,A200, A100, A400);
+$csc-theme-accent: mat-palette($mat-csc-green, A200, A100, A400);
+$csc-theme-warn: mat-palette($mat-csc-red, A200, A100, A400);
+$csc-theme-discret:mat-palette($mat-csc-grey, A200, A100, A400);
+
+$csc-theme: mat-light-theme($csc-theme-primary, $csc-theme-accent, $csc-theme-warn);
+
+
+@include angular-material-theme($csc-theme);
+* {
+  font-family: 'Avenir';
+}

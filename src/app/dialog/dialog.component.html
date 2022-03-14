@@ -1,0 +1,36 @@
+<div *ngIf="data.class === 'error'">
+  <h1 mat-dialog-title>ERROR</h1>
+  <mat-dialog-content>{{ data.message }}<br><br><br></mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <!-- <button mat-raised-button mat-dialog-close mat-dialog-close="true">Keep me logged in</button> -->
+    <button mat-raised-button mat-dialog-close mat-dialog-close="false">Close</button>
+  </mat-dialog-actions>
+
+</div>
+<div *ngIf="data.class === 'info'">
+  <h1 mat-dialog-title class="success">SUCCESS</h1>
+  <mat-dialog-content>{{ data.message }}<br><br><br></mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <!-- <button mat-raised-button mat-dialog-close mat-dialog-close="true">Keep me logged in</button> -->
+    <button mat-raised-button mat-dialog-close mat-dialog-close="false">Close</button>
+  </mat-dialog-actions>
+
+</div>
+<div *ngIf="data.class === 'delete'">
+  <h1 mat-dialog-title class="error">Are you sure?</h1>
+  <mat-dialog-content>{{ data.message }}<br><br><br></mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <button mat-raised-button mat-dialog-close mat-dialog-close="true">Yes</button>
+    <button mat-raised-button mat-dialog-close mat-dialog-close="false">No</button>
+  </mat-dialog-actions>
+
+</div>
+<div *ngIf="data.class === 'validate'">
+  <h1 mat-dialog-title class="success">Are you sure?</h1>
+  <mat-dialog-content>{{ data.message }}<br><br><br></mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <button mat-raised-button mat-dialog-close mat-dialog-close="true">Yes</button>
+    <button mat-raised-button mat-dialog-close mat-dialog-close="false">No</button>
+  </mat-dialog-actions>
+
+</div>
