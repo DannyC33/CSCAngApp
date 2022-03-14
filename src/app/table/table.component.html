@@ -1,0 +1,130 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <p-toolbar *ngIf="shownewbutton || showcheckbox || showsearch" class="here">
+        <ng-template pTemplate="left">
+            <button *ngIf="shownewbutton" pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" color="warn" (click)="openNew()"></button>
+            <button *ngIf="showcheckbox" pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger p-mr-2" (click)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length"></button>
+
+        </ng-template>
+        <ng-template *ngIf="showsearch" pTemplate="right" style="height:25px;">
+
+              <span class="p-input-icon-left">
+                  <i class="pi pi-search"></i>
+                  <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
+              </span>
+
+      </ng-template>
+<!--
+        <ng-template pTemplate="right">
+            <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="p-mr-2 p-d-inline-block"></p-fileUpload>
+            <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"></button>
+        </ng-template> -->
+    </p-toolbar>
+
+    <p-table #dt [value]="products" [rows]="rows" [paginator]="paginator" [globalFilterFields]="globalfilterfields"
+        [(selection)]="selectedProducts" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+
+        <ng-template pTemplate="header">
+            <tr>
+
+                <th *ngIf="showcheckbox" style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th [style]="getColStyle(header)" *ngFor="let header of tablerows;" [pSortableColumn]="header.sortable ? header.name:''">{{header.header}} <p-sortIcon *ngIf="header.sortable" field="{{header.name}}"></p-sortIcon></th>
+
+                <th *ngIf="showDeleteButton || showEditButton"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+            <tr>
+
+                <td *ngIf="showcheckbox">
+                    <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                </td>
+
+                <td [style]="header.align ? 'text-align:'+header.align+';':'text-align:left;'"  *ngFor="let header of tablerows;">{{ formatRow(header,product[header.name])}}</td>
+
+                <td *ngIf="showeditbutton || showdeletebutton">
+                    <button *ngIf="showeditbutton" pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success edit" (click)="editProduct(product)"></button>
+                    <button *ngIf="showdeletebutton" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(product)"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="p-d-flex p-ai-center p-jc-between text-center">
+                In total there are {{products ? products.length : 0 }} {{nameofentries ? nameofentries : 'entries'}}.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<p-dialog [(visible)]="productDialog" [style]="dialogwidth" header="{{dialogheader}}" [modal]="false" styleClass="p-fluid text-left">
+
+  <ng-template pTemplate="content" class=text-left>
+
+    <div *ngFor="let item of itemedit;let i = index" class="p-field">
+
+      <label for="{{item.name}}">{{item.label}}</label>
+
+        <input *ngIf="item.type === 'textfield'" type="text" pInputText id="{{item.name}}" [(ngModel)]="product[item.name]" [required]="item.required"  [autofocus]="i == 0" [disabled]="(!item.modifiable && product.id)" />
+        <input *ngIf="item.type === 'passwordfield'" type="password" pInputText id="{{item.name}}" [(ngModel)]="product[item.name]" [required]="item.required"  [autofocus]="i == 0" [disabled]="(!item.modifiable && product.id)" />
+        <div *ngIf="item.type === 'textarea'">
+
+              <textarea id="{{item.name}}" pInputTextarea [(ngModel)]="product[item.name]" [required]="item.required" rows="{{item.rows}}" cols="{{item.cols}}" [disabled]="(!item.modifiable && product.id)" ></textarea>
+        </div>
+
+        <div *ngIf="item.type === 'numberfield'">
+
+            <p-inputNumber id="{{item.name}}" [(ngModel)]="product[item.name]" [required]="item.required"  mode="{{item.pattern.mode}}" currency="{{item.pattern.currency}}" locale="{{item.pattern.locale}}" [disabled]="(!item.modifiable && product.id)" ></p-inputNumber>
+
+          </div>
+
+          <div *ngIf="item.type === 'dropdown'">
+            <!-- <label for="{{item.name}}">{{item.label}}</label> -->
+            <p-dropdown [(ngModel)]="product[item.name]" inputId="{{item.name}}" [options]="item.select" placeholder="Select" [required]="item.required" [disabled]="(!item.modifiable && product.id)" >
+                <ng-template let-option pTemplate="item2">
+                    <span>{{option.label}}</span>
+                </ng-template>
+            </p-dropdown>
+
+          </div>
+          <div *ngIf="item.type === 'checkbox'">
+
+            <div  *ngFor="let detail of item.select;let i = index" >
+              <div class="p-field-checkbox p-col-6">
+
+              <p-checkbox id="{{item.name +i}}" name="{{item.name +i}}" value="{{detail.value}}" label="{{detail.label}}" [(ngModel)]="product[item.name]" [required]="item.required" [disabled]="(!item.modifiable && product.id)" ></p-checkbox>
+
+            </div>
+            </div>
+          </div>
+            <div *ngIf="item.type === 'radiobutton'">
+              <div class="p-formgrid p-grid">
+                <div *ngFor="let detail of item.select; let i = index">
+
+                <div class="p-field-radiobutton p-col-6">
+                   <p-radioButton id="{{item.name + i}}" name="{{item.name}}" value="{{detail.value}}" [(ngModel)]="product[item.name]" [disabled]="(!item.modifiable && product.id)" ></p-radioButton>
+                    <span style="padding-left:15px;"> <label for="{{detail.label}}">{{detail.label}}</label></span>
+                </div>
+              </div>
+              </div>
+            </div>
+
+
+        <small class="p-error" *ngIf="(submitted && !product[item.name]) && item.required">{{item.label}} is required.</small>
+   </div>
+
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveProduct()"></button>
+  </ng-template>
+
+</p-dialog>
+
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

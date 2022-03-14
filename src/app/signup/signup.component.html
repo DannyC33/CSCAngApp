@@ -1,0 +1,941 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<div class="container ">
+  <div class="row justify-content-md-center">
+    <div class="col-sm-12 col-md-8 col-center">
+      <a href="https://members.cscstation.com"><img style="width:75%;" src="/assets/images/getlogo.png"></a>
+<br>
+<div class="mat-title">Join CSC Station</div>
+</div>
+  </div>
+  <div class="row justify-content-md-center">
+<div class="col-sm-12 col-md-12">
+
+
+  <!-- We are using Material horizontal steppers to separate signup blocks -->
+  <!-- First step - principal contact and primary member  -->
+<mat-horizontal-stepper linear (selectionChange)="updateMembers();recalcAdServ()">
+  <form name="signupForm1" [formGroup]="formGroup1" novalidate>
+  <mat-step label="Membership" [stepControl]="formGroup1">
+
+    <br><br>
+         <div class="mat-headline">Contact Information</div>
+
+   <p class="align-justify">
+    Our goal is to make your coworking experience at <span class="csc-text-accent">CSC Station</span> memorable. With your membership you have access to state of the art coworking space and innovation hub just steps from the Wilmington train station and Wilmington Riverfront. Membership provides you access to fully equipped office space, community space, meeting rooms, high-end conference facilities and off-street parking to launch or grow your business. (An annual membership is just <b>${{ pricing.generalMembership }}</b>).
+
+
+   </p>
+    <p class="required-hint align-right">* indicates a required field</p>
+    <div class="col-sm-12 col-md-12 light-border col-center">
+      <b>Please select type of membership:</b><br>
+
+      <mat-radio-group formControlName="membertype">
+        <mat-radio-button value="individual" checked color="accent">
+       individual membership
+        </mat-radio-button>
+        <mat-radio-button value="company" color="accent">
+          company membership
+            </mat-radio-button>
+       </mat-radio-group>
+       <div *ngIf="formGroup1.get('membertype').value === 'company'" class="csc-text-warn">By selecting “company membership” you have the authority to execute this Agreement on behalf of the company</div>
+    </div>
+    <br>
+    <div class="col-sm-12 col-md-12 light-border">
+      <b>Current address:</b><br><br>
+      <mat-form-field [hidden]="formGroup1.get('membertype').value !== 'company'" appearance="outline">
+        <mat-label>Company Name</mat-label>
+        <input matInput required formControlName="companyName" autocomplete="new-companyName" name="company">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Country</mat-label>
+        <mat-select required formControlName="selectedCountry" name="country">
+
+            <mat-option *ngFor="let iso of country" [value]="iso.substr(0,2)">{{iso.substr(3)}}</mat-option>
+
+
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Address</mat-label>
+        <input matInput required formControlName="address" autocomplete="new-address" name="street">
+
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>floor - building - c/o</mat-label>
+        <input matInput formControlName="address2" autocomplete="new-address2" name="address">
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:30%;margin-right:5%;">
+        <mat-label>City</mat-label>
+        <input matInput required formControlName="city" autocomplete="new-city" name="city">
+      </mat-form-field>
+
+
+      <mat-form-field *ngIf="formGroup1.get('selectedCountry').value.toUpperCase()  === 'US' || formGroup1.get('selectedCountry').value.toUpperCase()  === 'CA' " appearance="outline" style="width:30%;">
+        <mat-label>State</mat-label>
+
+        <mat-select required *ngIf="formGroup1.get('selectedCountry').value.toUpperCase()  === 'US'" formControlName="state" name="state">
+          <mat-option>None</mat-option>
+            <mat-option *ngFor="let state of us_states" value="{{state.substr(0,2)}}">{{state.substr(3)}}</mat-option>
+        </mat-select>
+        <mat-select required *ngIf="formGroup1.get('selectedCountry').value.toUpperCase() === 'CA'" formControlName="state" name="state">
+          <mat-option>None</mat-option>
+            <mat-option *ngFor="let state of ca_states" value="{{state.substr(0,2)}}">{{state.substr(3)}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:30%;margin-left:5%;">
+        <mat-label>ZIP</mat-label>
+        <input matInput required formControlName="zip" autocomplete="new-zip" name="zip">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+
+        <mat-label>Primary contact <small> (is the adressee for CSC Station's invoices. He/she does not need to become a member.)</small></mat-label>
+        <input matInput required formControlName="primaryContact" autocomplete="new-primaryContact" name="contact">
+
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:48%;margin-right:4%;">
+        <mat-label>Email</mat-label>
+        <input matInput required formControlName="primaryEmail" autocomplete="new-primaryEmail" name="email">
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:48%;">
+        <mat-label>Phone</mat-label>
+        <input *ngIf="formGroup1.get('selectedCountry').value === 'US' || formGroup1.get('selectedCountry').value === 'CA'" matInput required formControlName="primaryPhone" autocomplete="new-primaryPhone" name="phone" prefix="+1 " mask="(000) 000 0000" >
+        <input *ngIf="formGroup1.get('selectedCountry').value !== 'US' && formGroup1.get('selectedCountry').value !== 'CA'" matInput required formControlName="primaryPhone" autocomplete="new-primaryPhone" name="phone">
+      </mat-form-field>
+
+      <div class="center">
+        <table width=100%>
+          <tr>
+            <td width=10% style="text-align:left;">
+              <b>Billing address:</b>
+            </td>
+            <td width=80%>
+              <mat-radio-group  formControlName="billingAddress">
+                <mat-radio-button value="current address" checked color="accent">
+                  Same as current address
+                </mat-radio-button>
+                <mat-radio-button value="csc address" color="accent">
+                  c/o CSC Station<br>112 S. French Street<br>Wilmington, DE 19801
+                    </mat-radio-button>
+               </mat-radio-group>
+
+            </td>
+            <td width=20%>
+              &nbsp;
+            </td>
+          </tr>
+        </table>
+
+
+      </div>
+
+       <b>Primary member:</b><br><br>
+       <mat-checkbox (click)="fillPrimaryMember()" formControlName="primaryMemberCheckbox">
+        Check if same as Primary Contact
+      </mat-checkbox><br><br>
+       <mat-form-field appearance="outline">
+        <mat-label>Primary member name</mat-label>
+        <input matInput required formControlName="primaryMember" name="contact" autocomplete="new-primaryMember">
+
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:48%;margin-right:4%;">
+        <mat-label>Primary member email</mat-label>
+        <input matInput required formControlName="primaryMemberEmail" name="email" autocomplete="new-primaryMamberEmail">
+        <mat-error *ngIf="formGroup1.get('primaryMemberEmail').hasError('inuse')">
+         An account with this email address already exists.
+      </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:48%;">
+        <mat-label>Primary member phone</mat-label>
+        <input *ngIf="formGroup1.get('selectedCountry').value === 'US' || formGroup1.get('selectedCountry').value === 'CA'" matInput required formControlName="primaryMemberPhone" autocomplete="new-memberPhone" name="phone" prefix="+1 " mask="(000) 000 0000" >
+        <input *ngIf="formGroup1.get('selectedCountry').value !== 'US' && formGroup1.get('selectedCountry').value !== 'CA'" matInput required formControlName="primaryMemberPhone" autocomplete="new-memberPhone" name="phone">
+      </mat-form-field>
+
+
+      <mat-form-field style="width:48%;margin-right:4%;" appearance="outline">
+        <mat-label>Start date of your membership</mat-label>
+        <input matInput [matDatepicker]="myDatepicker" #startDate formControlName="startDate" required [min]="minDate"  [matDatepickerFilter]="dateFilter" autocomplete="new-myDate">
+        <mat-datepicker-toggle [for]="myDatepicker" matSuffix></mat-datepicker-toggle>
+        <mat-datepicker #myDatepicker></mat-datepicker>
+
+      </mat-form-field>
+      <mat-form-field style="width:48%;" appearance="outline">
+        <mat-label>Renewal date</mat-label>
+        <input matInput formControlName="renewalDate" readonly>
+
+
+      </mat-form-field>
+
+       <br><br>
+       <div class="center"> <button disabled="{{formGroup1.invalid}}" mat-raised-button color="accent" matStepperNext>Next</button></div>
+
+
+    </div>
+
+
+  </mat-step>
+
+
+
+</form>
+
+
+
+  <!-- SECOND STEPPER (Additional Members) -->
+
+
+  <mat-step label="Additional members" [stepControl]="formGroup2">
+    <form name="signupForm2" [formGroup]="formGroup2" novalidate>
+    <br><br>
+    <div class="mat-headline">Additional Member(s)</div>
+<p class="align-justify">
+  Additional members can be added to your account anytime using the <span class="csc-text-accent">CSC Station Member's portal</span>.  Membership is required for all individuals utilizing CSC Station’s facilities. Fees can be invoiced after registering.(An annual membership is <b>${{ pricing.generalMembership }}</b> or just <b>${{ pricing.officeMembership }}</b> if you subscribe to an office or dedicated desk).
+
+
+</p><p class="required-hint align-right">* indicates a required field</p>
+
+
+<div formArrayName="addtlMembers">
+  <div  *ngFor="let memberCtrl of controls; let i = index" [formGroupName]="i">
+
+    <div class="col-sm-12 col-md-12 light-border">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Additional member name</mat-label>
+        <input matInput required formControlName="membername" autocomplete="new-membername">
+
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:48%;margin-right:4%;">
+        <mat-label>Additional member email</mat-label>
+        <input matInput required formControlName="memberemail" autocomplete="new-memberemail">
+        <mat-error *ngIf="memberCtrl.get('memberemail').hasError('inuse')">
+          An account with this email address already exists.
+       </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:48%;">
+        <mat-label>Additional member phone</mat-label>
+        <input *ngIf="formGroup1.get('selectedCountry').value === 'US' || formGroup1.get('selectedCountry').value === 'CA'" matInput required formControlName="memberphone" autocomplete="new-newmemberPhone" name="phone" prefix="+1 " mask="(000) 000 0000" >
+        <input *ngIf="formGroup1.get('selectedCountry').value !== 'US' && formGroup1.get('selectedCountry').value !== 'CA'" matInput required formControlName="memberphone" autocomplete="new-newMemberPhone" name="phone">
+
+      </mat-form-field>
+        <button mat-stroked-button color="warn"
+                (click)="removeAdditionalMember(i)">
+            Remove this
+        </button>
+      </div><br>
+
+</div>
+</div>
+
+</form>
+
+<div class="col-sm-12 col-md-12 light-border">
+    <p class="mat-subheading-2" style="margin-left:25px;">Total number of members on your account (including the primary member): {{ totalMembers }}</p>
+
+    <button mat-button color="accent" style="margin-right: 20px;padding:5px;"
+            (click)="addAdditionalMembers()">
+        <mat-icon>add_circle</mat-icon> Add an additional member to your contract<br>
+    </button>
+  </div>
+
+
+    <div class="center">
+      <button mat-raised-button color="accent" matStepperPrevious >Back</button>
+      <button mat-raised-button color="accent" [disabled]="formGroup2.invalid"  matStepperNext>Next</button>
+    </div>
+  </mat-step>
+
+
+<!-- THRID STEP CHOOSE BETWEEN OFFICE, OPENSPACE ADN DEDICATED DESK -->
+  <mat-step label="Desks & Offices" completed="!formGroup3.invalid && !memberlistIncomplet()" ([click])="updateMembers()">
+    <form name="signupForm3" [formGroup]="formGroup3" novalidate>
+      <div class="mat-headline">How Will You Cowork?</div>
+
+      <div *ngIf="showOpenspace" class="col-sm-12 col-md-12 light-border">
+        <b>Monthly subscription to openspace (${{ pricing.openspace }} /mo)</b><br>
+        <br><p class="align-justify">
+          <span class="csc-text-accent">CSC Station’s Open Space</span> is a great way to start your coworking experience. On a first-come, first-serve basis, take a seat at one of our shared community spaces including any of our lounges, library, booths, cafe or community tables.  You can cancel  at any time.
+
+          <br><br><span class="csc-text-accent">Simply drag & drop your members into the subscription list:</span></p>
+        <div cdkDropListGroup>
+
+
+          <div class="example-container" style="margin-right:4%;">
+            <h6>Openspace subscriptions</h6>
+
+            <div
+              cdkDropList
+              [cdkDropListData]="openspaceSubscriptions"
+              class="example-list"
+              (cdkDropListDropped)="drop($event,'openspace')">
+              <div class="subscribed-box" *ngFor="let item of openspaceSubscriptions" cdkDrag>{{item.membername}}</div>
+            </div>
+          </div>
+          <div class="example-container">
+            <h6>Your team members without subscription</h6>
+
+            <div
+              cdkDropList
+              [cdkDropListData]="members"
+              class="example-list"
+              cdkDropListSortingDisabled
+              (cdkDropListDropped)="drop($event,'openspace')">
+              <div class="example-box" *ngFor="let item of members" cdkDrag>{{item.membername}}</div>
+            </div>
+          </div>
+        </div>
+        <b *ngIf="openspaceSubscriptions.length>0">Number of openspace subscriptions: <span class="csc-text-accent">{{openspaceSubscriptions.length}}</span><br>
+        Total monthly fee: <span class="csc-text-accent">{{openspaceSubscriptions.length*pricing.openspace | currency:'USD':'symbol':'2.2-2'}}</span></b><br>
+        <button mat-stroked-button color="warn"
+        (click)="removeOpenspace()">
+            Cancel openspace subscriptions
+        </button>
+      </div> <br>
+      <div *ngIf="showDedicated" class="col-sm-12 col-md-12 light-border">
+        <b>Monthly subscription to your dedicated desk  (${{ pricing.dedicated }}/mo)</b><br>
+        <br><p class="align-justify">Head straight to your reserved / dedicated desk at <span class="csc-text-accent">CSC Station </span>on a daily basis and receive access to all the amenities of a private office. A reserved desk location will be assigned to you upon registering for the service.
+
+
+         <br><br><span class="csc-text-accent">Simply drag & drop your members into the subscription list:</span></p>
+        <div cdkDropListGroup>
+
+
+          <div class="example-container" style="margin-right:4%;">
+            <h6>Reserved desk subscriptions</h6>
+
+            <div
+              cdkDropList
+              [cdkDropListData]="dedicatedSubscriptions"
+              class="example-list"
+              (cdkDropListDropped)="drop($event,'dedicated')">
+              <div class="subscribed-box" *ngFor="let item of dedicatedSubscriptions" cdkDrag>{{item.membername}}</div>
+            </div>
+          </div>
+          <div class="example-container">
+            <h6>Your team members without subscription</h6>
+
+            <div
+              cdkDropList
+              [cdkDropListData]="members"
+              class="example-list"
+              cdkDropListSortingDisabled
+              (cdkDropListDropped)="drop($event,'dedicated')">
+              <div class="example-box" *ngFor="let item of members" cdkDrag>{{item.membername}}</div>
+            </div>
+          </div>
+        </div>
+        <b *ngIf="dedicatedSubscriptions.length>0">Number of reserved desk subscriptions: <span class="csc-text-accent">{{dedicatedSubscriptions.length}}</span><br>
+        Total monthly fee: <span class="csc-text-accent">{{dedicatedSubscriptions.length*pricing.dedicated | currency:'USD':'symbol':'2.2-2'}}</span></b><br>
+        <button mat-stroked-button color="warn"
+        (click)="removeDedicated()">
+            Cancel reserved desk subscriptions
+        </button>
+      </div> <br>
+      <div *ngIf="showOffice" class="col-sm-12 col-md-12 light-border">
+        <mde-popover #appPopover="mdePopover" [mdePopoverOverlapTrigger]="false" [mdePopoverCloseOnClick]="true">
+          <mat-card class="example-card mat-elevation-z4" style="max-width:350px;"><mat-card-header>
+            <mat-card-title>{{ popupRoomNumber }}</mat-card-title>
+            <mat-card-subtitle>
+              {{ popupCapacity }} person office on {{ orderNumber(popupFloor) }} floor<br>
+              Surface : {{ popupSqft }} sqft<br>
+              Price: <b class="csc-text-primary">{{ popupPrice | currency:'USD':'symbol':'2.2-2'}} </b>
+            </mat-card-subtitle>
+          </mat-card-header>
+          <img mat-card-image [src]="popupPhoto" alt="Photo of a Shiba Inu">
+          <mat-card-content>
+            <div *ngIf="!popupAvailability" style="margin:5px 15px 15px 0px;">   <mat-icon color="warn" style="vertical-align: middle;margin-right:10px;">cancel</mat-icon>
+               <i>currently not available</i>  </div>
+              <div *ngIf="popupAvailability" style="margin:5px 15px 15px 0px;">   <mat-icon color="accent" style="vertical-align: middle;margin-right:10px;">check_circle</mat-icon>
+                available for subscription  </div>
+            <p class="align-left">
+              {{ popupDescription }}
+            </p>
+          </mat-card-content>
+          <mat-card-actions class="col-center">
+            <button [disabled]="!popupAvailability" mat-raised-button color="accent" onfocus="this.blur()" (click)="subscribeOffice(popupRoomNumber)">Subscribe now</button><br><br>
+
+          </mat-card-actions></mat-card>
+        </mde-popover>
+
+        <!-- WOW - yes all offices are hardcoded here - otherwise we could not integrate the grid as is - SORRY-->
+
+        <b>Private Office Monthly Subscription (starting at $800/mo)</b><br>
+        <br><p class="align-justify"><span class="csc-text-accent">CSC Station</span> <b> private offices</b> are fully equipped with ergonomic chairs, a sit stand desk option, high speed wi-fi, daily cleaning service and a private entrance. Each of our dedicated offices has a locking system controlled by you for extra security. And of course you have access to all the amenities at <span class="csc-text-accent">CSC Station</span>. One daily parking space in our private gate controlled lot is included in the Private Office subscription.
+          <br><br></p>
+        <mat-tab-group #tabRef>
+          <mat-tab label="First floor">
+            <mat-grid-list cols="60" rowHeight="3em" class="firstfloor" gutterSize="2">
+              <mat-grid-tile rowspan="2" colspan="60"></mat-grid-tile>
+              <mat-grid-tile colspan="24"></mat-grid-tile>
+              <!-- OFFICE 101  -->
+              <mat-grid-tile colspan="4">
+
+                <div [className]="isAvailable('101') ? 'free' : 'occupied'" (mouseenter)="showPopover('101')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile></mat-grid-tile>
+              <!--  OFFICE 103 -->
+              <mat-grid-tile colspan="4">
+                <div [className]="isAvailable('103') ? 'free' : 'occupied'" (mouseenter)="showPopover('103')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile></mat-grid-tile>
+              <mat-grid-tile colspan="4">
+                <div [className]="isAvailable('105') ? 'free' : 'occupied'" (mouseenter)="showPopover('105')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="5"></mat-grid-tile>
+
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('109') ? 'free' : 'occupied'" (mouseenter)="showPopover('109')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile></mat-grid-tile>
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('111') ? 'free' : 'occupied'" (mouseenter)="showPopover('111')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="10"></mat-grid-tile>
+
+
+              <mat-grid-tile colspan="47"></mat-grid-tile>
+
+              <mat-grid-tile rowspan="2" colspan="5">
+                <div [className]="isAvailable('107') ? 'free' : 'occupied'" (mouseenter)="showPopover('107')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="8"></mat-grid-tile>
+
+              <mat-grid-tile colspan="47"></mat-grid-tile>
+
+
+
+              <mat-grid-tile colspan="8"></mat-grid-tile>
+
+
+              <mat-grid-tile colspan="60"></mat-grid-tile>
+
+
+              <mat-grid-tile colspan="26"></mat-grid-tile>
+
+              <mat-grid-tile colspan="2">
+                <div [className]="isAvailable('102') ? 'free' : 'occupied'" (mouseenter)="showPopover('102')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="2">
+                <div [className]="isAvailable('104') ? 'free' : 'occupied'" (mouseenter)="showPopover('104')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('106') ? 'free' : 'occupied'" (mouseenter)="showPopover('106')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile></mat-grid-tile>
+              <mat-grid-tile colspan="3">
+
+                <div [className]="isAvailable('108') ? 'free' : 'occupied'" (mouseenter)="showPopover('108')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+
+              <mat-grid-tile></mat-grid-tile>
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('110') ? 'free' : 'occupied'" (mouseenter)="showPopover('110')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile></mat-grid-tile>
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('112') ? 'free' : 'occupied'" (mouseenter)="showPopover('112')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('114') ? 'free' : 'occupied'" (mouseenter)="showPopover('114')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="11"></mat-grid-tile>
+
+              <mat-grid-tile rowspan="2" colspan="60"><br>1st floor</mat-grid-tile>
+
+             </mat-grid-list>
+             <br>
+
+          </mat-tab>
+          <mat-tab label="Second floor">
+            <mat-grid-list cols="60" rowHeight="3em" class="secondfloor" gutterSize="2">
+              <mat-grid-tile rowspan="2" colspan="60"></mat-grid-tile>
+
+              <mat-grid-tile colspan="21">1</mat-grid-tile>
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('201') ? 'free' : 'occupied'" (mouseenter)="showPopover('201')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile></mat-grid-tile>
+
+              <mat-grid-tile colspan="4">
+                <div [className]="isAvailable('203') ? 'free' : 'occupied'" (mouseenter)="showPopover('203')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="4">
+                <div [className]="isAvailable('205') ? 'free' : 'occupied'" (mouseenter)="showPopover('205')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="9"></mat-grid-tile>
+
+              <mat-grid-tile colspan="4">
+                <div [className]="isAvailable('213') ? 'free' : 'occupied'" (mouseenter)="showPopover('213')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="4">
+                <div [className]="isAvailable('215') ? 'free' : 'occupied'" (mouseenter)="showPopover('215')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile colspan="10"></mat-grid-tile>
+
+
+              <mat-grid-tile colspan="60"></mat-grid-tile>
+              <mat-grid-tile colspan="47"></mat-grid-tile>
+
+              <mat-grid-tile colspan="3">
+                <div [className]="isAvailable('211') ? 'free' : 'occupied'" (mouseenter)="showPopover('211')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+
+              <mat-grid-tile colspan="10"></mat-grid-tile>
+
+
+
+              <mat-grid-tile colspan="60"></mat-grid-tile>
+
+              <mat-grid-tile rowspan="2" colspan="21"></mat-grid-tile>
+
+              <mat-grid-tile rowspan="2" colspan="3">
+                <div [className]="isAvailable('202') ? 'free' : 'occupied'" (mouseenter)="showPopover('202')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile rowspan="2" colspan="3">
+                <div [className]="isAvailable('204') ? 'free' : 'occupied'" (mouseenter)="showPopover('204')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile rowspan="2" colspan="4">
+                <div [className]="isAvailable('206') ? 'free' : 'occupied'" (mouseenter)="showPopover('206')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+
+              <mat-grid-tile rowspan="2" colspan="3">
+                <div [className]="isAvailable('208') ? 'free' : 'occupied'" (mouseenter)="showPopover('208')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+
+              <mat-grid-tile rowspan="2" colspan="4">
+                <div [className]="isAvailable('210') ? 'free' : 'occupied'" (mouseenter)="showPopover('210')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+              <mat-grid-tile rowspan="2" colspan="3">
+                <div [className]="isAvailable('212') ? 'free' : 'occupied'" (mouseenter)="showPopover('212')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+              <mat-grid-tile rowspan="2"></mat-grid-tile>
+              <mat-grid-tile rowspan="2" colspan="2">
+                <div [className]="isAvailable('214') ? 'free' : 'occupied'" (mouseenter)="showPopover('214')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+              <mat-grid-tile rowspan="2"></mat-grid-tile>
+              <mat-grid-tile rowspan="2" colspan="6">
+                <div [className]="isAvailable('216') ? 'free' : 'occupied'" (mouseenter)="showPopover('216')" [mdePopoverTriggerFor]="appPopover"
+                mdePopoverTriggerOn="hover" [mdePopoverOverlapTrigger]="false"></div>
+              </mat-grid-tile>
+              <mat-grid-tile rowspan="2" colspan="9"></mat-grid-tile>
+
+
+
+              <mat-grid-tile rowspan="2" colspan="60">2nd floor</mat-grid-tile>
+
+             </mat-grid-list>
+             <br>
+          </mat-tab>
+
+
+         </mat-tab-group>
+        <button mat-stroked-button color="warn"
+        (click)="removeOffice()">
+            Cancel private office subscriptions
+        </button>
+      </div> <br>
+      <div *ngIf="officeAdded">
+        <form name="signupForm3" [formGroup]="formGroup3" novalidate>
+      <div formArrayName="offices">
+        <div *ngFor="let office of officeSubscriptions; let i = index;" [formGroupName]="i">
+
+          <input type="hidden" value="{{office.number}}" formControlName="number">
+          <input type="hidden" value="{{office.id}}" formControlName="id">
+
+          <div class="col-sm-12 col-md-12 light-border">
+            <b>Office {{ office.number }} ({{ getDetail(office.number,'floor')}} floor)</b><br>
+            Space equipped for {{ getDetail(office.number,'capacity')}} people.<br><br>
+            <ul>
+              <li class="align-left">1 designated parking spot</li>
+              <li class="align-left">Concierge services</li>
+              <li class="align-left">High Speed Wi-Fi</li>
+              <li class="align-left">Secured entry access</li>
+              <li class="align-left">Daily Porter Service</li>
+              <li class="align-left">Gourmet Saxbys Coffee</li>
+              <li class="align-left">Outside patio seating</li>
+              <li class="align-left">Immediate Access to Rail Service</li>
+
+              <li class="align-left">Private Phone Booth access</li>
+
+              <li class="align-left">Conference Center and meet up space (monthly credit included)</li>
+              <li class="align-left">Printing (100 b&w / 50 color pages included per month)</li>
+              <li class="align-left">Furnished offices; wooden desk and ergonomic seating</li>
+              <li class="align-left">Fully equipped Café</li>
+              <li class="align-left">APP access - your cell phone is used as your card key</li>
+
+           </ul>
+            <div class="officeprice">
+              <div *ngIf="!showPrice[i]">
+                {{ getDetail(office.number,'defaultPrice') | currency:'USD':'symbol':'2.2-2'}} / month
+              </div>
+              <div *ngIf="showPrice[i]">
+                {{ showPrice[i] | currency:'USD':'symbol':'2.2-2'}} / month
+              </div>
+
+            </div>
+            <div>
+             Choose your term of engagement:<br>
+              <mat-radio-group formControlName="term">
+              <mat-radio-button  (click)="setShowPrice(office.number,i,a)" *ngFor="let eng of getDetail(office.number,'pricing');let a = index;" [checked]="eng.engagement==='1 month'" value="{{a}}" color="accent">
+             {{ eng.engagement }} <i>{{ showReduction(getDetail(office.number,'pricing'),a) }}</i>
+              </mat-radio-button>
+
+             </mat-radio-group>
+            </div>
+            <div cdkDropListGroup>
+
+
+              <div class="example-container" style="margin-right:4%;">
+                <h6>Attach members to your office space</h6>
+
+                <div
+                  cdkDropList
+                  [cdkDropListData]="officeSubscriptions[i].members"
+                  class="example-list"
+                  (cdkDropListDropped)="drop($event,'office',i)">
+                  <div class="subscribed-box" *ngFor="let item of officeSubscriptions[i].members" cdkDrag>{{item.membername}}</div>
+                </div>
+              </div>
+              <div class="example-container">
+                <h6>Your team members without subscription</h6>
+
+                <div
+                  cdkDropList
+                  [cdkDropListData]="members"
+                  class="example-list"
+                  cdkDropListSortingDisabled
+                  (cdkDropListDropped)="drop($event,'office',i)">
+                  <div class="example-box" *ngFor="let item of members" cdkDrag>{{item.membername}}</div>
+                </div>
+              </div>
+            </div>
+            ONE parking spot is included in your office subscription. Once the CSC Station contract is activated, you can link parking to a member of your team in the Member's Portal. This provides access to the gate controlled lot via cell-phone. The make, model and license plate of the member's car will be required at a later date.<br>
+              <img class="officeimage" [src]="getDetail(office.number,'picture')">
+              <button mat-stroked-button color="warn"
+                (click)="removeOffice(i)">
+                    Cancel this office
+                </button>
+
+          </div>
+          <br>
+        </div>
+        </div>
+      </form>
+      </div>
+
+
+<!-- Now let's chose what type of subscription the customer wants -->
+
+        <div class="col-sm-12 col-md-12 light-border">
+
+          <div>
+            <div *ngIf="!showOpenspace">
+              <button [disabled]="!showSubscriptions" mat-button color="accent" style="margin: 5px;padding:5px;"
+              (click)="addOpenspace()">
+               <mat-icon>add_circle</mat-icon> Add an open space subscription
+              </button>
+            </div>
+        <div *ngIf="!showDedicated">
+          <button [disabled]="!showSubscriptions" mat-button color="accent" style="margin: 5px;padding:5px;"
+          (click)="addDedicated()">
+           <mat-icon>add_circle</mat-icon> Add reserved desk subscription
+          </button>
+        </div>
+        <div *ngIf="!showOffice">
+          <button [disabled]="!showSubscriptions" mat-button color="accent" style="margin: 5px;padding:5px;"
+          (click)="addOffice()">
+           <mat-icon>add_circle</mat-icon> Add an individual office subscription<br>
+          </button>
+        </div>
+
+</div>
+</div>
+    </form>
+    <div class="center">
+      <button mat-raised-button color="accent" matStepperPrevious >Back</button>
+      <button *ngIf="!formGroup6.get('directSignup').value" mat-raised-button color="accent" [disabled]="formGroup3.invalid || memberlistIncomplet()"  matStepperNext>Next</button>
+    </div>
+
+  </mat-step>
+
+
+  <!-- FOURTH STEP - ADDITIONAL SERVICES -->
+
+  <form name="signupForm4" [formGroup]="formGroup4" novalidate>
+  <mat-step label="Additional services" [stepControl]="formGroup4" (selectionChange)="recalcAdServ()" *ngIf="!formGroup6.get('directSignup').value">
+
+    <br><br>
+    <div class="mat-headline">Additional Services</div>
+
+    <div class="col-sm-12 col-md-12 light-border">
+      <b>Choose from these additional service offers (optional)</b><br><br>
+      <div *ngIf="formGroup3.get('offices').value && formGroup3.get('offices').value.length > 0">
+
+       You have {{formGroup3.get('offices').value.length}} parking spot{{formGroup3.get('offices').value.length>1 ? 's' :''}} included with your private office subscription.<br><br>
+       <div *ngIf="memberTotal() > 0">
+        <mat-form-field appearance="outline" style="width:10%">
+          <input matInput formControlName="addtlParking" autocomplete="new-aadtlParking" type="number" (change)="recalcAdServ()">
+         </mat-form-field>   &nbsp;additional parking spots (${{pricing.parking}}/month)
+
+       </div>
+
+        </div>
+        <div *ngIf="!formGroup3.get('offices').value || formGroup3.get('offices').value.length === 0">
+          <mat-form-field appearance="outline" style="width:10%">
+            <input matInput formControlName="addtlParking" autocomplete="new-addtlParking" type="number" (change)="recalcAdServ()">
+        </mat-form-field>   &nbsp;parking spots (${{pricing.parking}}/month)
+        </div>
+
+      <br>
+      <mat-checkbox (change)="recalcAdServ()" formControlName="mailService">
+        Mail / Packages Service (${{pricing.mailService}}/month)
+      </mat-checkbox>
+      <br><br>
+      Monthly cost for the chosen additional services: <b>  {{ totalAdServ | currency:'USD':'symbol':'1.2-2' }}</b>
+      </div>
+
+    <div class="center">
+      <button mat-raised-button color="accent" matStepperPrevious >Back</button>
+      <button mat-raised-button color="accent" [disabled]="formGroup4.invalid"  matStepperNext>Next</button>
+    </div>
+  </mat-step>
+</form>
+
+
+<!-- FINALLY THE AGREEMENT FINALIZATION -->
+
+  <form name="signupForm5" [formGroup]="formGroup5" novalidate>
+  <mat-step label="Agreement finalization"  [stepControl]="formGroup5"*ngIf="!formGroup6.get('directSignup').value">
+    <br><br>
+    <div class="mat-headline">Agreement Details</div>
+
+    <div class="col-sm-12 col-md-12 light-border">
+      <b>Subsciptions:</b><br><br>
+      <table width=100%>
+        <tr>
+          <td style="text-align:left;">
+            {{printNumberOfMemberships()}}
+          </td>
+          <td style="text-align:right;">
+            {{ printMembershipPrice() | currency:'USD':'symbol':'1.2-2' }}
+          </td>
+        </tr>
+
+        <tr *ngIf="openspaceSubscriptions.length > 0">
+          <td style="text-align:left;">
+            {{printNumberOfOpenspace()}}
+          </td>
+          <td style="text-align:right;">
+            {{ printOpenspacePrice() | currency:'USD':'symbol':'1.2-2' }}
+          </td>
+        </tr>
+
+        <tr *ngIf="dedicatedSubscriptions.length > 0">
+          <td style="text-align:left;">
+            {{printNumberOfDedicated()}}
+          </td>
+          <td style="text-align:right;">
+            {{ printDedicatedPrice() | currency:'USD':'symbol':'1.2-2' }}
+          </td>
+        </tr>
+
+        <tr *ngFor="let office of officeControls; let i = index;">
+          <td style="text-align:left;">
+            {{printOfficeDetail(office)}}
+          </td>
+          <td style="text-align:right;">
+            {{ printOfficePrice(office) | currency:'USD':'symbol':'1.2-2' }}
+          </td>
+        </tr>
+
+
+          <tr *ngIf="totalAdServ > 0 && formGroup4.get('addtlParking').value > 0">
+            <td style="text-align:left;">
+            {{printParking()}}
+            </td>
+            <td style="text-align:right;">
+              {{printParkingPrice() | currency:'USD':'symbol':'1.2-2' }}
+            </td>
+          </tr>
+
+          <tr *ngIf="totalAdServ > 0 && formGroup4.get('mailService').value">
+            <td style="text-align:left;">
+              1 Mail/Package service (${{pricing.mailService}}/month)
+            </td>
+            <td style="text-align:right;">
+              {{pricing.mailService | currency:'USD':'symbol':'1.2-2' }}
+            </td>
+          </tr>
+
+
+        <tr>
+          <td style="text-align:left;">
+            Service retainer due at signup
+          </td>
+          <td style="text-align:right;">
+            {{getServiceRetainer() | currency:'USD':'symbol':'1.2-2' }}
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align:left;font-weight:bold;">
+            <br>Total billable at signature
+          </td>
+          <td style="text-align:right;font-weight:bold;">
+            <br><span [class.line-through]="promoCode !== ''"> {{getTotalBillable() | currency:'USD':'symbol':'1.2-2' }} </span> <span style="text-decoration:solid;" *ngIf="promoCode !== ''">&nbsp; &nbsp; &nbsp; &nbsp;{{promoCode.onetime | currency:'USD':'symbol':'1.2-2' }}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align:left;">
+            New monthly recurring fee
+          </td>
+          <td style="text-align:right;">
+            <span [class.line-through]="promoCode !== ''">{{monthlyFee() | currency:'USD':'symbol':'1.2-2' }}</span> <span style="text-decoration:solid;" *ngIf="promoCode !== ''">&nbsp; &nbsp; &nbsp; &nbsp;{{promoCode.recurrent | currency:'USD':'symbol':'1.2-2' }}</span>
+          </td>
+        </tr>
+        <br>
+        <div *ngIf="promoCode === ''">
+          <mat-form-field appearance="outline" style="width:30%">
+            <mat-label>Enter promo code</mat-label>
+            <input matInput formControlName="promocode" autocomplete="new-promocode" (change)="promoCodeEnter()"/>
+            <mat-error *ngIf="false">This code is unknown</mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="accent">Submit</button>
+        </div>
+
+      </table>
+
+      </div>
+
+<br>
+      <form name="signupForm6" [formGroup]="formGroup6" novalidate>
+
+      <div class="col-sm-12 col-md-12 light-border" *ngIf="newOffices.length == 0" >
+
+        <script src="https://core.spreedly.com/iframe/iframe-v1.min.js"></script>
+
+        <div>
+
+<br>
+       <mat-checkbox formControlName="acceptTerms2" color="accent">
+      </mat-checkbox> I agree to the <b class="csc-text-accent">Terms and Conditions</b> of the CSC Station Membership Agreement.<br><br>
+      <iframe style="margin:0;width:100%;height:800px;border:0px;" [src]="frameurl" *ngIf="formGroup6.get('acceptTerms2').value"></iframe>
+
+
+            <mat-expansion-panel #mep="matExpansionPanel">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                 <b style="color:acccent;"> &nbsp;&nbsp;Terms and Conditions &nbsp;&nbsp;</b>
+                </mat-panel-title>
+                <mat-panel-description>Click to expand</mat-panel-description>
+              </mat-expansion-panel-header>
+              <div [innerHTML]="agreementText">
+
+
+              </div>
+             </mat-expansion-panel>
+
+        </div>
+
+      </div>
+
+    </form>
+
+      <br>
+      <div class="col-sm-12 col-md-12 light-border" *ngIf="newOffices.length > 0" >
+
+
+      By clicking on <span class="csc-text-accent"><b>"Become a CSC Station Member"</b></span>, you submit a membership application with the details you provided in the previous steps and the subscriptions summarized here above. Your credit card will be charged {{getTotalBillable() | currency:'USD':'symbol':'1.2-2' }} <br><br>
+      <br>You will receive a confirmation email with a link to electronically sign the agreement with <span class="csc-text">CSC Station</span>. Once we have validated your application, you will receive a completed copy of the agreement and instructions, how to connect to our members portal. There you will be able to complete the payment details and set up more services you might want to use.
+      <br><br><br>
+
+
+      <table>
+        <tr>
+          <td style="vertical-align: top;"><div style="margin:15px;">
+            <mat-checkbox formControlName="acceptTerms" color="accent">
+            </mat-checkbox> I agree to the <b class="csc-text-accent">Terms and Conditions</b> of the CSC Station Membership Agreement.
+           </div>
+          </td>
+
+          <td style="vertical-align: top;text-align:center"><button *ngIf="!submittingForm" style="margin-top:3px;padding:10px;" mat-raised-button color="accent" (click)="submitForm()" [disabled]="acceptTerms()">Become a CSC Station Member</button>
+            <img *ngIf="submittingForm" width="30" style="margin-left:50px;" align="center" src="/assets/images/loading.gif">
+          </td>
+        </tr>
+
+
+  </table>
+            <mat-expansion-panel #mep="matExpansionPanel">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                 <b style="color:acccent;"> &nbsp;&nbsp;Terms and Conditions &nbsp;&nbsp;</b>
+                </mat-panel-title>
+                <mat-panel-description>Click to expand</mat-panel-description>
+              </mat-expansion-panel-header>
+              <div [innerHTML]="agreementText">
+
+
+              </div>
+             </mat-expansion-panel>
+
+     </div>
+
+     <div class="center">
+      <button mat-raised-button color="accent" matStepperPrevious >Back</button>
+    </div>
+
+  </mat-step>
+</form>
+ </mat-horizontal-stepper>
+
+
+
+</div>
+</div>

@@ -1,0 +1,8 @@
+@import '../../csc-theme.scss';
+
+h1{
+  color: mat-color($csc-theme-warn);
+}
+.success{
+  color: mat-color($csc-theme-accent);
+}
